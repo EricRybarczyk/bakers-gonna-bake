@@ -5,14 +5,14 @@ public class Step {
     private String shortDescription;
     private String description;
     private String videoSource;
-    private String thumbnameImage;
+    private String thumbnailURL;
 
-    public Step(int id, String shortDescription, String description, String videoSource, String thumbnameImage) {
+    public Step(int id, String shortDescription, String description, String videoSource, String thumbnailURL) {
         this.id = id;
         this.shortDescription = shortDescription;
         this.description = description;
         this.videoSource = videoSource;
-        this.thumbnameImage = thumbnameImage;
+        this.thumbnailURL = thumbnailURL;
     }
 
     public int getId() {
@@ -29,7 +29,7 @@ public class Step {
         return videoSource;
     }
 
-    public String getThumbnameImage() {
-        return thumbnameImage;
+    public String getThumbnailURL() {
+        return thumbnailURL;
     }
 }
