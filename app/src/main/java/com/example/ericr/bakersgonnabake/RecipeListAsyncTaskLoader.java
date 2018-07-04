@@ -9,6 +9,8 @@ import com.example.ericr.bakersgonnabake.model.Recipe;
 
 import java.util.List;
 
+// TODO - verify: don't think I need this when using Retrofit since it handles loading on background thread
+
 public class RecipeListAsyncTaskLoader extends AsyncTaskLoader<List<Recipe>> {
 
     public RecipeListAsyncTaskLoader(@NonNull Context context) {
