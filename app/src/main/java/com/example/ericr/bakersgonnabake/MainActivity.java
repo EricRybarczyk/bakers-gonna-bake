@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.ericr.bakersgonnabake.model.Recipe;
@@ -19,7 +20,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity
+        implements RecipeAdapter.RecipeAdapterOnClickHandler {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -32,21 +34,23 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        String toPassIn = "testing";
 
         // wire up things to RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL ,false);
         recipeRecyclerView.setLayoutManager(layoutManager);
         recipeRecyclerView.setHasFixedSize(true);
-        RecipeAdapter recipeAdapter = new RecipeAdapter();
-        recipeRecyclerView.setAdapter(recipeAdapter);
 
         // get the data from the service via retrofit
         UdacityBakingEndpoint endpoint = RecipeService.getClient().create(UdacityBakingEndpoint.class);
         Call<List<Recipe>> recipeCall = endpoint.getRecipes();
+
         recipeCall.enqueue(new Callback<List<Recipe>>() {
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 List<Recipe> resultRecipes = response.body();
+                RecipeAdapter recipeAdapter = new RecipeAdapter(resultRecipes, MainActivity.this::onClick);
+                recipeRecyclerView.setAdapter(recipeAdapter);
                 Log.i(TAG, "resultRecipes from Retrofit: " + resultRecipes.size() + " recipes returned!");
             }
 
@@ -60,6 +64,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(int movieId) {
-
+        Toast.makeText(this, "You clicked a Recipe!", Toast.LENGTH_LONG).show();
     }
 }
