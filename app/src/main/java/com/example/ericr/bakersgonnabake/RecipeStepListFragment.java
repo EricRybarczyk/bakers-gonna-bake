@@ -43,7 +43,7 @@ public class RecipeStepListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_recipe_steps, container, false);
-        ButterKnife.bind(rootView);
+        ButterKnife.bind(this, rootView);
 
         // TODO - figure out how the recipe data will be persisted.
 
