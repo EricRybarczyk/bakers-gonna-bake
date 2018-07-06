@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
     public void onBindViewHolder(@NonNull RecipeHolder holder, int position) {
         Recipe recipe = recipeList.get(position);
         holder.recipeNameText.setText(recipe.getName());
+        // TODO - come up with a better approach than this switch - this is just for UI prototyping
+        switch (position) {
+            case 0:
+                holder.recipeImage.setImageResource(R.drawable.recipe1_1024x576);
+                break;
+            case 1:
+                holder.recipeImage.setImageResource(R.drawable.recipe2_1024x576);
+                break;
+            case 2:
+                holder.recipeImage.setImageResource(R.drawable.recipe3_1024x576);
+                break;
+            case 3:
+                holder.recipeImage.setImageResource(R.drawable.recipe4_1024x576);
+                break;
+        }
     }
 
     @Override
@@ -59,6 +75,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
     public class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.recipe_name_text) protected TextView recipeNameText;
+        @BindView(R.id.recipe_image) protected ImageView recipeImage;
 
         public RecipeHolder(View itemView) {
             super(itemView);
