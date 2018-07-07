@@ -1,6 +1,7 @@
 package com.example.ericr.bakersgonnabake;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import com.anupcowkur.reservoir.ReservoirPutCallback;
 import com.example.ericr.bakersgonnabake.model.Recipe;
 import com.example.ericr.bakersgonnabake.service.RecipeService;
 import com.example.ericr.bakersgonnabake.service.UdacityBakingEndpoint;
+import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -124,18 +126,24 @@ public class RecipeListFragment extends Fragment
 
     @Override
     public void onClick(int recipeId) {
-        // check the cache
-        List<Recipe> cachedRecipes = null;
-        Type resultType = new TypeToken<List<Recipe>>() {}.getType();
-        try {
-            cachedRecipes = Reservoir.get(RecipeService.RECIPE_LIST_CACHE_KEY, resultType);
-        } catch (IOException e) {
-            Log.i(TAG, "Reservoir exception" + e.getMessage());
-        }
-        if (cachedRecipes != null) {
-            Toast.makeText(getActivity(), "Cached Recipes Found!", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(getActivity(), "You clicked a Recipe!", Toast.LENGTH_LONG).show();
-        }
+        Class destination = RecipeStepsActivity.class;
+        Intent intentToStart = new Intent(getActivity(), destination);
+        intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, recipeId);
+        startActivity(intentToStart);
+
+
+//        // check the cache
+//        List<Recipe> cachedRecipes = null;
+//        Type resultType = new TypeToken<List<Recipe>>() {}.getType();
+//        try {
+//            cachedRecipes = Reservoir.get(RecipeService.RECIPE_LIST_CACHE_KEY, resultType);
+//        } catch (IOException e) {
+//            Log.i(TAG, "Reservoir exception" + e.getMessage());
+//        }
+//        if (cachedRecipes != null) {
+//            Toast.makeText(getActivity(), "Cached Recipes Found! recipeId = " + String.valueOf(recipeId), Toast.LENGTH_LONG).show();
+//        } else {
+//            Toast.makeText(getActivity(), "You clicked a Recipe! recipeId = " + String.valueOf(recipeId), Toast.LENGTH_LONG).show();
+//        }
     }
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Bakers Gonna Bake</string>
     <string name="aria_photo_of_recipe">Photo of Recipe</string>
+    <string name="recipe_step_ingredients_text">Ingredient List</string>
 </resources>

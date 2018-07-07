@@ -77,7 +77,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
         @BindView(R.id.recipe_name_text) protected TextView recipeNameText;
         @BindView(R.id.recipe_image) protected ImageView recipeImage;
 
-        public RecipeHolder(View itemView) {
+
+        RecipeHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
