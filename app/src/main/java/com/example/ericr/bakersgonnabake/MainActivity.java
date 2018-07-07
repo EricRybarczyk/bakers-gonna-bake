@@ -37,30 +37,6 @@ public class MainActivity extends AppCompatActivity
         // TODO - change this to check for a particular view when the tablet layout is set up
         isTwoPaneLayout = false;
 
-//        // wire up things to RecyclerView
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL ,false);
-//        recipeRecyclerView.setLayoutManager(layoutManager);
-//        recipeRecyclerView.setHasFixedSize(true);
-//
-//        // get the data from the service via retrofit
-//        UdacityBakingEndpoint endpoint = RecipeService.getClient().create(UdacityBakingEndpoint.class);
-//        Call<List<Recipe>> recipeCall = endpoint.getRecipes();
-//
-//        recipeCall.enqueue(new Callback<List<Recipe>>() {
-//            @Override
-//            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-//                List<Recipe> resultRecipes = response.body();
-//                RecipeAdapter recipeAdapter = new RecipeAdapter(resultRecipes, MainActivity.this::onClick);
-//                recipeRecyclerView.setAdapter(recipeAdapter);
-//                Log.i(TAG, "resultRecipes from Retrofit: " + resultRecipes.size() + " recipes returned!");
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<Recipe>> call, Throwable t) {
-//                Log.e(TAG, t.getMessage());
-//                Toast.makeText(getBaseContext(), "Retrofit onFailure", Toast.LENGTH_LONG).show();
-//            }
-//        });
     }
 
     @Override
