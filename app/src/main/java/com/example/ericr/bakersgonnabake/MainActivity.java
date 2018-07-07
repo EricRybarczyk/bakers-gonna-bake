@@ -1,24 +1,12 @@
 package com.example.ericr.bakersgonnabake;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
-
-import com.example.ericr.bakersgonnabake.model.Recipe;
-import com.example.ericr.bakersgonnabake.service.RecipeService;
-import com.example.ericr.bakersgonnabake.service.UdacityBakingEndpoint;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements RecipeAdapter.RecipeAdapterOnClickHandler {
@@ -38,6 +26,8 @@ public class MainActivity extends AppCompatActivity
         isTwoPaneLayout = false;
 
     }
+
+
 
     @Override
     public void onClick(int movieId) {
