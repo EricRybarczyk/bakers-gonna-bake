@@ -28,8 +28,8 @@ import retrofit2.Response;
 public class RecipeDataStore {
 
     private static final String TAG = RecipeDataStore.class.getSimpleName();
-    private static final int CACHE_SIZE_BYTES = 1024 * 1000;
-    private static final long CACHE_MAX_AGE_MILLISECONDS = 1000 * 60 * 10; // 10 minutes
+    private static final int CACHE_SIZE_BYTES = 1024 * 1000; // 1 MB
+    private static final long CACHE_MAX_AGE_MILLISECONDS = 1000 * 60 * 10; // 1000 * 60 * 10 == 10 minutes
     private static final String RECIPE_LIST_CACHE_KEY = "recipe_list_cache_key";
     private static final String RECIPE_CACHE_AGE_KEY = "recipe_cache_age_key";
 
@@ -37,12 +37,6 @@ public class RecipeDataStore {
         void onLoadFinished(List<Recipe> recipeList);
         void onLoadError(String errorMessage);
     }
-
-    public interface RecipeLoaderCallbacks {
-        void onLoadFinished(Recipe recipe);
-        void onLoadError(String errorMessage);
-    }
-
 
     public RecipeDataStore(Context context) {
         initializeCache(context);
@@ -63,6 +57,7 @@ public class RecipeDataStore {
                 Date now = new Date();
                 if (now.getTime() - cacheWriteDate.getTime() > CACHE_MAX_AGE_MILLISECONDS) {
                     Reservoir.clear();
+                    Log.i(TAG, "Cache cleared due to age");
                 }
             } else { // missing cache date indicates inconsistent data state, best to clear
                 Reservoir.clear();
