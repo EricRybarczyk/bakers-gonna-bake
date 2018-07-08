@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.anupcowkur.reservoir.Reservoir;
+import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Recipe;
 import com.example.ericr.bakersgonnabake.service.RecipeService;
 import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
@@ -27,12 +28,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipeStepListFragment extends Fragment {
+public class RecipeStepListFragment extends Fragment
+    implements RecipeDataStore.RecipeListLoaderCallbacks {
 
     private static final String TAG = RecipeStepListFragment.class.getSimpleName();
     OnRecipeStepClickListener recipeStepClickListener;
     @BindView(R.id.recipe_steps_list) protected RecyclerView recipeStepsListRecyclerView;
     private Recipe activeRecipe;
+    private int activeRecipeId;
 
     // interface for callback to host activity when item is clicked
     public interface OnRecipeStepClickListener {
@@ -77,33 +80,33 @@ public class RecipeStepListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        int recipeId = RecipeAppConstants.ERROR_RECIPE_ID;
+        activeRecipeId = RecipeAppConstants.ERROR_RECIPE_ID;
         RecipeStepsActivity parentActivity = (RecipeStepsActivity) getActivity();
         if (parentActivity != null) {
-            recipeId = parentActivity.getRecipeId();
+            activeRecipeId = parentActivity.getRecipeId();
         }
-        activeRecipe = getRecipe(recipeId);
-        RecipeStepAdapter adapter = new RecipeStepAdapter(getActivity(), activeRecipe);
-        recipeStepsListRecyclerView.setAdapter(adapter);
+
+        (new RecipeDataStore(getActivity())).loadRecipeList(this);
 
     }
 
-    private Recipe getRecipe(int recipeId) {
-        List<Recipe> recipeList = null;
-        Type resultType = new TypeToken<List<Recipe>>() {}.getType();
-        try {
-            recipeList = Reservoir.get(RecipeService.RECIPE_LIST_CACHE_KEY, resultType);
-        } catch (IOException e) {
-            Log.e(TAG, "Reservoir exception" + e.getMessage());
-        }
+    @Override
+    public void onLoadFinished(List<Recipe> recipeList) {
         if (recipeList != null) {
             for (Recipe recipe : recipeList) {
-                if (recipe.getId() == recipeId) {
-                    return recipe;
+                if (recipe.getId() == activeRecipeId) {
+                    activeRecipe = recipe;
+                    RecipeStepAdapter adapter = new RecipeStepAdapter(getActivity(), activeRecipe);
+                    recipeStepsListRecyclerView.setAdapter(adapter);
                 }
             }
         }
-        return null; // TODO - implement some error condition & display
+    }
+
+    @Override
+    public void onLoadError(String errorMessage) {
+        Log.e(TAG, errorMessage);
+        // TODO - implement some error condition & display
     }
 
     @Override
