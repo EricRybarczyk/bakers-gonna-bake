@@ -49,7 +49,7 @@ public class RecipeListFragment extends Fragment
 
     @Override
     public void onLoadFinished(List<Recipe> recipeList) {
-        RecipeAdapter recipeAdapter = new RecipeAdapter(recipeList, RecipeListFragment.this::onClick);
+        RecipeAdapter recipeAdapter = new RecipeAdapter(recipeList, RecipeListFragment.this);
         recipeRecyclerView.setAdapter(recipeAdapter);
     }
 
@@ -58,7 +58,10 @@ public class RecipeListFragment extends Fragment
         Log.e(TAG, errorMessage);
     }
 
-
+    // TODO - review this click handler location, perhaps move up to Activity.
+    // Note to self: I think this is typically handled in the Activity, not the Fragment
+    // but in this case I think it will work ok since all devices will have this fragment alone
+    // in the MainActivity. However, I might move it to have better/typical code organization.
     @Override
     public void onClick(int recipeId) {
         Class destination = RecipeStepsActivity.class;

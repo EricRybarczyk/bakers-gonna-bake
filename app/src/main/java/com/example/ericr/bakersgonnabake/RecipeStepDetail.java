@@ -4,24 +4,27 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
 
-public class RecipeStepsActivity extends AppCompatActivity
-    implements RecipeStepListFragment.OnRecipeStepClickListener {
+public class RecipeStepDetail extends AppCompatActivity {
 
-    private static final String TAG = RecipeStepsActivity.class.getSimpleName();
+
     private int recipeId;
+    private int stepId;
+    private static final String TAG = RecipeStepDetail.class.getSimpleName();
 
     public int getRecipeId() {
         return recipeId;
+    }
+    public int getStepId() {
+        return stepId;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe_steps);
+        setContentView(R.layout.activity_recipe_step_detail);
 
         Intent starter = getIntent();
 
@@ -29,16 +32,14 @@ public class RecipeStepsActivity extends AppCompatActivity
             recipeId = starter.getIntExtra(RecipeAppConstants.KEY_RECIPE_ID, RecipeAppConstants.ERROR_RECIPE_ID);
         } else {
             recipeId = RecipeAppConstants.ERROR_RECIPE_ID;
-            Log.e(TAG, "Missing expected data: " + RecipeAppConstants.KEY_RECIPE_ID);
         }
-    }
 
-    @Override
-    public void onRecipeStepClicked(int stepId) {
-        Class destination = RecipeStepDetail.class;
-        Intent intentToStart = new Intent(this, destination);
-        intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, recipeId);
-        intentToStart.putExtra(RecipeAppConstants.KEY_STEP_ID, stepId);
-        startActivity(intentToStart);
+        if (starter.hasExtra(RecipeAppConstants.KEY_STEP_ID)) {
+            stepId = starter.getIntExtra(RecipeAppConstants.KEY_STEP_ID, RecipeAppConstants.ERROR_STEP_ID);
+        } else {
+            stepId = RecipeAppConstants.ERROR_STEP_ID;
+            Log.e(TAG, "Missing expected data: " + RecipeAppConstants.KEY_STEP_ID);
+        }
+
     }
 }

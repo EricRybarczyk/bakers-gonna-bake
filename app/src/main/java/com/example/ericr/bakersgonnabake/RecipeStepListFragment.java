@@ -34,7 +34,6 @@ public class RecipeStepListFragment extends Fragment
     private static final String TAG = RecipeStepListFragment.class.getSimpleName();
     OnRecipeStepClickListener recipeStepClickListener;
     @BindView(R.id.recipe_steps_list) protected RecyclerView recipeStepsListRecyclerView;
-    private Recipe activeRecipe;
     private int activeRecipeId;
 
     // interface for callback to host activity when item is clicked
@@ -95,8 +94,7 @@ public class RecipeStepListFragment extends Fragment
         if (recipeList != null) {
             for (Recipe recipe : recipeList) {
                 if (recipe.getId() == activeRecipeId) {
-                    activeRecipe = recipe;
-                    RecipeStepAdapter adapter = new RecipeStepAdapter(getActivity(), activeRecipe);
+                    RecipeStepAdapter adapter = new RecipeStepAdapter(getActivity(), recipe, recipeStepClickListener);
                     recipeStepsListRecyclerView.setAdapter(adapter);
                 }
             }

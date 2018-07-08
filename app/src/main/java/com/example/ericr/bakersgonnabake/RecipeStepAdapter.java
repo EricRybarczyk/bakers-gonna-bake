@@ -7,27 +7,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ericr.bakersgonnabake.model.Recipe;
+import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.RecipeStepHolder> {
 
     private List<RecipeStepDisplayItem> stepDisplayItems;
+    private RecipeStepListFragment.OnRecipeStepClickListener recipeStepClickListener;
 
-    public RecipeStepAdapter(Context context, Recipe recipe) {
+    RecipeStepAdapter(Context context, Recipe recipe, RecipeStepListFragment.OnRecipeStepClickListener recipeStepClickListener) {
         stepDisplayItems = new ArrayList<>();
+        this.recipeStepClickListener = recipeStepClickListener;
         prepareDisplayData(context, recipe);
     }
 
     private void prepareDisplayData(Context context, Recipe recipe) {
         // first item will be for ingredient list
-        stepDisplayItems.add(new RecipeStepDisplayItem(0, context.getString(R.string.recipe_step_ingredients_text)));
+        stepDisplayItems.add(new RecipeStepDisplayItem(RecipeAppConstants.INGREDIENT_STEP_INDICATOR, context.getString(R.string.recipe_step_ingredients_text)));
         // add each step
         for (int i = 0; i < recipe.getSteps().size(); i++) {
             stepDisplayItems.add(new RecipeStepDisplayItem(i, recipe.getSteps().get(i).getShortDescription()));
@@ -66,8 +71,10 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
         }
 
         @Override
+        @OnClick
         public void onClick(View v) {
-
+            int stepId = stepDisplayItems.get(getAdapterPosition()).getStepId();
+            recipeStepClickListener.onRecipeStepClicked(stepId);
         }
     }
 

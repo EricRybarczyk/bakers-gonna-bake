@@ -8,8 +8,8 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity
-        implements RecipeAdapter.RecipeAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity {
+        //implements RecipeAdapter.RecipeAdapterOnClickHandler
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isTwoPaneLayout;
@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    @Override
-    public void onClick(int movieId) {
-        Toast.makeText(this, "You clicked a Recipe!", Toast.LENGTH_LONG).show();
-    }
+//    @Override
+//    public void onClick(int movieId) {
+//        Toast.makeText(this, "You clicked a Recipe!", Toast.LENGTH_LONG).show();
+//    }
 }

@@ -44,4 +44,13 @@ public class Recipe {
         return image;
     }
 
+    public Step getStep(int stepId) {
+        for (Step s : this.steps) {
+            if (s.getId() == stepId) {
+                return s;
+            }
+        }
+        return null;
+    }
+
 }
