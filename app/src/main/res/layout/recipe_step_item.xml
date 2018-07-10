@@ -10,13 +10,18 @@
         android:id="@+id/recipe_step_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:layout_margin="0dp"
+        android:gravity="center_vertical"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:drawableEnd="@mipmap/ic_arrow_right"
+        android:drawablePadding="-4sp"
         tools:text="Step Name"/>
 
 </FrameLayout>

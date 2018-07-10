@@ -79,25 +79,12 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
     }
 
     private class RecipeStepDisplayItem {
-        private static final int MAX_DISPLAY_LENGTH = 30;
-        private static final String REMOVE_END_CHAR = ".";
         private int stepId;
         private String stepText;
 
         RecipeStepDisplayItem(int stepId, String stepText) {
             this.stepId = stepId;
-            this.stepText = scrubDisplayText(stepText);
-        }
-
-        // tidy it up for better display
-        private String scrubDisplayText(String text) {
-            if (text.endsWith(REMOVE_END_CHAR)) {
-                text = text.substring(0, (text.length() - 1));
-            }
-            if (text.length() > MAX_DISPLAY_LENGTH) {
-                text = text.substring(0, MAX_DISPLAY_LENGTH) + "...";
-            }
-            return text;
+            this.stepText = stepText;
         }
 
         int getStepId() {

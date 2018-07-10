@@ -4,8 +4,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,16 +102,23 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 playerView.setVisibility(View.GONE);
                 ingredientsLabel.setText(getActivity().getResources().getString(R.string.recipe_step_ingredients_text));
 
+                // build HTML list for better display
                 StringBuilder sb = new StringBuilder();
                 for (Ingredient ingredient : activeRecipe.getIngredients()) {
+                    sb.append("&#8226; ");
                     sb.append(ingredient.getQuantity());
                     sb.append(" ");
                     sb.append(ingredient.getMeasurement());
                     sb.append(" ");
                     sb.append(ingredient.getIngredientName());
-                    sb.append("\n");
+                    sb.append("<br>");
                 }
-                stepDescription.setText(sb.toString());
+                //stepDescription.setText(sb.toString());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    stepDescription.setText(Html.fromHtml(sb.toString(), Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    stepDescription.setText(Html.fromHtml(sb.toString()));
+                }
 
             } else {
                 ingredientsHeaderSection.setVisibility(View.GONE);
