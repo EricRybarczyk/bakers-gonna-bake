@@ -31,7 +31,7 @@
             android:layout_margin="0dp"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#FFF"
+            android:textColor="@color/colorLightText"
             android:background="#9000"
             tools:text="Recipe Name Here"/>
 

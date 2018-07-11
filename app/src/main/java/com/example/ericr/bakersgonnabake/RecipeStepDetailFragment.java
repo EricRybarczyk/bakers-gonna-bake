@@ -47,7 +47,6 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     private SimpleExoPlayer exoPlayer;
     @BindView(R.id.exo_player) protected SimpleExoPlayerView playerView;
     @BindView(R.id.step_description) protected TextView stepDescription;
-    @BindView(R.id.frame_ingredients_header) protected FrameLayout ingredientsHeaderSection;
     @BindView(R.id.ingredients_label) protected TextView ingredientsLabel;
 
     public RecipeStepDetailFragment() {
@@ -121,9 +120,10 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 }
 
             } else {
-                ingredientsHeaderSection.setVisibility(View.GONE);
+                ingredientsLabel.setVisibility(View.GONE);
                 // get step media info
                 Step activeStep = activeRecipe.getStep(stepId);
+
                 stepDescription.setText(activeStep.getDescription());
 
                 playerView.setDefaultArtwork(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.baking_clipart));
@@ -131,6 +131,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             }
         }
     }
+
 
     @Override
     public void onLoadError(String errorMessage) {
