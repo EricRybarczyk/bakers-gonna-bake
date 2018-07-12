@@ -7,12 +7,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
@@ -48,6 +51,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.exo_player) protected SimpleExoPlayerView playerView;
     @BindView(R.id.step_description) protected TextView stepDescription;
     @BindView(R.id.ingredients_label) protected TextView ingredientsLabel;
+    @BindView(R.id.parent_constraint_layout) protected ConstraintLayout constraintLayout;
+    @BindView(R.id.step_description_container) protected ScrollView descriptionScrollView;
 
     public RecipeStepDetailFragment() {
         //activeStepId = RecipeAppConstants.ERROR_STEP_ID;
@@ -99,7 +104,19 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             if (stepId == RecipeAppConstants.INGREDIENT_STEP_INDICATOR) {
                 // hide player because ingredient step has no video
                 playerView.setVisibility(View.GONE);
+                ingredientsLabel.setVisibility(View.VISIBLE);
                 ingredientsLabel.setText(getActivity().getResources().getString(R.string.recipe_step_ingredients_text));
+
+                // adjust constraints because player view is now gone and XML constrains to it
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(
+                        descriptionScrollView.getId(),
+                        ConstraintSet.TOP,
+                        ingredientsLabel.getId(),
+                        ConstraintSet.BOTTOM
+                        );
+                constraintSet.applyTo(constraintLayout);
 
                 // build HTML list for better display
                 StringBuilder sb = new StringBuilder();
@@ -112,7 +129,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                     sb.append(ingredient.getIngredientName());
                     sb.append("<br>");
                 }
-                //stepDescription.setText(sb.toString());
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     stepDescription.setText(Html.fromHtml(sb.toString(), Html.FROM_HTML_MODE_LEGACY));
                 } else {
@@ -121,11 +138,11 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
 
             } else {
                 ingredientsLabel.setVisibility(View.GONE);
+                playerView.setVisibility(View.VISIBLE);
+
                 // get step media info
                 Step activeStep = activeRecipe.getStep(stepId);
-
                 stepDescription.setText(activeStep.getDescription());
-
                 playerView.setDefaultArtwork(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.baking_clipart));
                 initializePlayer(Uri.parse(activeStep.getVideoURL()));
             }
