@@ -14,9 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Ingredient;
@@ -37,12 +39,13 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecipeStepDetailFragment extends Fragment implements RecipeDataStore.RecipeListLoaderCallbacks {
+public class RecipeStepDetailFragment extends Fragment implements RecipeDataStore.RecipeListLoaderCallbacks, View.OnClickListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
     private int recipeId;
@@ -53,6 +56,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.ingredients_label) protected TextView ingredientsLabel;
     @BindView(R.id.parent_constraint_layout) protected ConstraintLayout constraintLayout;
     @BindView(R.id.step_description_container) protected ScrollView descriptionScrollView;
+    @BindView(R.id.button_nav_back) protected Button navBackButton;
+    @BindView(R.id.button_nav_forward) protected Button navForwardButton;
 
     public RecipeStepDetailFragment() {
         //activeStepId = RecipeAppConstants.ERROR_STEP_ID;
@@ -63,9 +68,12 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         ButterKnife.bind(this, rootView);
-
+        navBackButton.setOnClickListener(this);
+        navForwardButton.setOnClickListener(this);
         return rootView;
     }
+
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -104,6 +112,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             if (stepId == RecipeAppConstants.INGREDIENT_STEP_INDICATOR) {
                 // hide player because ingredient step has no video
                 playerView.setVisibility(View.GONE);
+                // hide Previous button because this is the first step in the list so there is no previous
+                navBackButton.setVisibility(View.GONE);
                 ingredientsLabel.setVisibility(View.VISIBLE);
                 ingredientsLabel.setText(getActivity().getResources().getString(R.string.recipe_step_ingredients_text));
 
@@ -146,6 +156,12 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 playerView.setDefaultArtwork(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.baking_clipart));
                 initializePlayer(Uri.parse(activeStep.getVideoURL()));
             }
+
+            // hide forward button when this is the last step
+            if (stepId == activeRecipe.getSteps().get(activeRecipe.getSteps().size() - 1).getId()) {
+                navForwardButton.setVisibility(View.GONE);
+            }
+            // TODO - fix constrains when buttons are hidden
         }
     }
 
@@ -187,6 +203,22 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             exoPlayer.stop();
             exoPlayer.release();
             exoPlayer = null;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Button button = (Button) v;
+        // TODO - eval current place in step list and then launch intent basically like the click handler in RecipeStepsActivity.java
+        switch (button.getId()) {
+            case R.id.button_nav_forward:
+                Toast.makeText(getActivity(), "You clicked Forward from step " + String.valueOf(stepId), Toast.LENGTH_LONG).show();
+                break;
+            case R.id.button_nav_back:
+                Toast.makeText(getActivity(), "You clicked Previous from step " + String.valueOf(stepId), Toast.LENGTH_LONG).show();
+                break;
+            default:
+                throw new NoSuchElementException("No handler defined for button " + button.getId());
         }
     }
 }
