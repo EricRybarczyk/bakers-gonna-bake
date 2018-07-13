@@ -2,6 +2,7 @@ package com.example.ericr.bakersgonnabake;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -15,10 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Ingredient;
@@ -48,8 +47,8 @@ import butterknife.ButterKnife;
 public class RecipeStepDetailFragment extends Fragment implements RecipeDataStore.RecipeListLoaderCallbacks, View.OnClickListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
-    private int recipeId;
-    private int stepId;
+    private int activeRecipeId;
+    private int activeStepId;
     private SimpleExoPlayer exoPlayer;
     @BindView(R.id.exo_player) protected SimpleExoPlayerView playerView;
     @BindView(R.id.step_description) protected TextView stepDescription;
@@ -58,6 +57,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.step_description_container) protected ScrollView descriptionScrollView;
     @BindView(R.id.button_nav_back) protected Button navBackButton;
     @BindView(R.id.button_nav_forward) protected Button navForwardButton;
+    private Recipe activeRecipe;
 
     public RecipeStepDetailFragment() {
         //activeStepId = RecipeAppConstants.ERROR_STEP_ID;
@@ -80,8 +80,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
         super.onActivityCreated(savedInstanceState);
 
         RecipeStepDetail parentActivity = (RecipeStepDetail) getActivity();
-        recipeId = parentActivity.getRecipeId();
-        stepId = parentActivity.getStepId();
+        activeRecipeId = parentActivity.getRecipeId();
+        activeStepId = parentActivity.getStepId();
     }
 
     @Override
@@ -98,10 +98,9 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
 
     @Override
     public void onLoadFinished(List<Recipe> recipeList) {
-        Recipe activeRecipe = null;
-
+        activeRecipe = null;
         for (Recipe recipe : recipeList) {
-            if (recipe.getId() == recipeId) {
+            if (recipe.getId() == activeRecipeId) {
                 activeRecipe = recipe;
                 break;
             }
@@ -109,15 +108,17 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
 
         if (activeRecipe != null) {
 
-            if (stepId == RecipeAppConstants.INGREDIENT_STEP_INDICATOR) {
+            StringBuilder sb = new StringBuilder(); // this will be filled with html string
+
+            if (activeStepId == RecipeAppConstants.INGREDIENT_STEP_INDICATOR) {
                 // hide player because ingredient step has no video
                 playerView.setVisibility(View.GONE);
                 // hide Previous button because this is the first step in the list so there is no previous
-                navBackButton.setVisibility(View.GONE);
+//                navBackButton.setVisibility(View.GONE);
                 ingredientsLabel.setVisibility(View.VISIBLE);
                 ingredientsLabel.setText(getActivity().getResources().getString(R.string.recipe_step_ingredients_text));
 
-                // adjust constraints because player view is now gone and XML constrains to it
+                // adjust constraints because player view is now gone and descriptionScrollView constrains to it in XML
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
                 constraintSet.connect(
@@ -129,7 +130,6 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 constraintSet.applyTo(constraintLayout);
 
                 // build HTML list for better display
-                StringBuilder sb = new StringBuilder();
                 for (Ingredient ingredient : activeRecipe.getIngredients()) {
                     sb.append("&#8226; ");
                     sb.append(ingredient.getQuantity());
@@ -140,28 +140,38 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                     sb.append("<br>");
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    stepDescription.setText(Html.fromHtml(sb.toString(), Html.FROM_HTML_MODE_LEGACY));
-                } else {
-                    stepDescription.setText(Html.fromHtml(sb.toString()));
-                }
-
             } else {
                 ingredientsLabel.setVisibility(View.GONE);
                 playerView.setVisibility(View.VISIBLE);
 
                 // get step media info
-                Step activeStep = activeRecipe.getStep(stepId);
-                stepDescription.setText(activeStep.getDescription());
+                Step activeStep = activeRecipe.getStep(activeStepId);
+
+                // html paragraphs for better display
+                if (!activeStep.getShortDescription().isEmpty()
+                        && !activeStep.getShortDescription().equalsIgnoreCase(activeStep.getDescription())) {
+                    sb.append("<p>");
+                    sb.append(activeStep.getShortDescription());
+                    sb.append("</p>");
+                }
+                sb.append("<p>");
+                sb.append(activeStep.getDescription());
+                sb.append("</p>");
+
                 playerView.setDefaultArtwork(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.baking_clipart));
                 initializePlayer(Uri.parse(activeStep.getVideoURL()));
             }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stepDescription.setText(Html.fromHtml(sb.toString(), Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                stepDescription.setText(Html.fromHtml(sb.toString()));
+            }
+
             // hide forward button when this is the last step
-            if (stepId == activeRecipe.getSteps().get(activeRecipe.getSteps().size() - 1).getId()) {
+            if (activeStepId == activeRecipe.getSteps().get(activeRecipe.getSteps().size() - 1).getId()) {
                 navForwardButton.setVisibility(View.GONE);
             }
-            // TODO - fix constrains when buttons are hidden
         }
     }
 
@@ -209,16 +219,65 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @Override
     public void onClick(View v) {
         Button button = (Button) v;
-        // TODO - eval current place in step list and then launch intent basically like the click handler in RecipeStepsActivity.java
+        Class destination;
+        Intent intentToStart;
+        // eval current position in step list and then launch intent to appropriate next/previous step
         switch (button.getId()) {
             case R.id.button_nav_forward:
-                Toast.makeText(getActivity(), "You clicked Forward from step " + String.valueOf(stepId), Toast.LENGTH_LONG).show();
+                destination = RecipeStepDetail.class;
+                intentToStart = new Intent(getActivity(), destination);
+                intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, activeRecipeId);
+                intentToStart.putExtra(RecipeAppConstants.KEY_STEP_ID, getNextStepId(activeStepId));
+                startActivity(intentToStart);
                 break;
             case R.id.button_nav_back:
-                Toast.makeText(getActivity(), "You clicked Previous from step " + String.valueOf(stepId), Toast.LENGTH_LONG).show();
+                if (activeStepId == RecipeAppConstants.INGREDIENT_STEP_INDICATOR) {
+                    // go to step list since Ingredients step is shown as first step
+                    destination = RecipeStepsActivity.class;
+                    intentToStart = new Intent(getActivity(), destination);
+                    intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, activeRecipeId);
+                    startActivity(intentToStart);
+                } else {
+                    // go to previous step in current recipe, special handling when on first step so we can go to Ingredients as step
+                    int navigateBackToStepId = getPreviousStepId(activeStepId);
+                    if (activeStepId == activeRecipe.getSteps().get(0).getId()) {
+                        navigateBackToStepId = RecipeAppConstants.INGREDIENT_STEP_INDICATOR;
+                    }
+                    destination = RecipeStepDetail.class;
+                    intentToStart = new Intent(getActivity(), destination);
+                    intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, activeRecipeId);
+                    intentToStart.putExtra(RecipeAppConstants.KEY_STEP_ID, navigateBackToStepId);
+                    startActivity(intentToStart);
+                }
                 break;
             default:
                 throw new NoSuchElementException("No handler defined for button " + button.getId());
         }
+    }
+
+    // this feels clunky, I probably need a better data structure to support back/forward list traversal in a more natural way
+    // or maybe I need to rework how I'm navigating and make this another RecyclerView maybe with swipe navigation
+    private int getNextStepId(int currentStepId) {
+        Step result = activeRecipe.getSteps().get(0);
+        int i = 0;
+        for (Step s: activeRecipe.getSteps()) {
+            i++; // this now indexes the next item (may not exist)
+            if (s.getId() == currentStepId) {
+                if (i < this.activeRecipe.getSteps().size()) {
+                    result = activeRecipe.getSteps().get(i);
+                }
+                break;
+            }
+        }
+        return result.getId(); // this is either the next step or is circles back to the first
+    }
+
+    private int getPreviousStepId(int currentStepId) {
+        Step currentStep = activeRecipe.getStep(currentStepId);
+        int currentIndex = activeRecipe.getSteps().indexOf(currentStep);
+        if (currentIndex <= 0) { // indicates not found or currentStepId is index 0
+            return currentStepId;
+        }
+        return activeRecipe.getSteps().get(currentIndex - 1).getId();
     }
 }

@@ -9,8 +9,8 @@ public class Step {
 
     public Step(int id, String shortDescription, String description, String videoURL, String thumbnailURL) {
         this.id = id;
-        this.shortDescription = shortDescription;
-        this.description = description;
+        this.shortDescription = shortDescription.trim();
+        this.description = description.trim();
         this.videoURL = videoURL;
         this.thumbnailURL = thumbnailURL;
     }

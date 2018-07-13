@@ -13,7 +13,7 @@ public class Recipe {
 
     public Recipe(int id, String name, List<Ingredient> ingredients, List<Step> steps, int servings, String image) {
         this.id = id;
-        this.name = name;
+        this.name = name.trim();
         this.ingredients = ingredients;
         this.steps = steps;
         this.servings = servings;
@@ -52,5 +52,4 @@ public class Recipe {
         }
         return null;
     }
-
 }
