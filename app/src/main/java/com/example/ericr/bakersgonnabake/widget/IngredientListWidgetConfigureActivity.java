@@ -10,8 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,7 +17,7 @@ import com.example.ericr.bakersgonnabake.R;
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Ingredient;
 import com.example.ericr.bakersgonnabake.model.Recipe;
-import com.example.ericr.bakersgonnabake.util.SimpleHtmlUtility;
+import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,8 @@ import butterknife.ButterKnife;
 public class IngredientListWidgetConfigureActivity extends Activity implements RecipeDataStore.RecipeListLoaderCallbacks {
 
     private static final String PREFS_NAME = "com.example.ericr.bakersgonnabake.widget.IngredientListWidget";
-    private static final String PREF_PREFIX_KEY = "appwidget_";
+    private static final String PREF_CONTENT_PREFIX_KEY = "appwidget_content_";
+    private static final String PREF_RECIPE_ID_PREFIX_KEY = "appwidget_recipe_id_";
     private static final String TAG = IngredientListWidgetConfigureActivity.class.getSimpleName();
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private List<Recipe> recipeList;
@@ -47,19 +46,26 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
             TextView clickedView = (TextView) view;
             String selectedText = clickedView.getText().toString();
             StringBuilder widgetText = new StringBuilder();
+            int recipeId = RecipeAppConstants.ERROR_RECIPE_ID;
 
             // When the view is clicked, store the ingredients string locally
             for (Recipe r : recipeList) {
                 if (r.getName().equalsIgnoreCase(selectedText)) {
+                    recipeId = r.getId();
+                    widgetText.append(getString(R.string.appwidget_text_header));
+                    widgetText.append(": ");
+                    widgetText.append(r.getName());
+                    widgetText.append("\n");
                     for (Ingredient ingredient : r.getIngredients()) {
                         widgetText.append("* ");
                         widgetText.append(ingredient.getIngredientName());
                         widgetText.append("\n");
                     }
+                    break;
                 }
             }
 
-            saveTitlePref(context, mAppWidgetId, widgetText.toString());
+            savePrefs(context, mAppWidgetId, widgetText.toString(), recipeId);
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -78,27 +84,36 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
     }
 
     // Write the prefix to the SharedPreferences object for this widget
-    static void saveTitlePref(Context context, int appWidgetId, String text) {
+    static void savePrefs(Context context, int appWidgetId, String displayText, int recipeId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
+        prefs.putString(PREF_CONTENT_PREFIX_KEY + appWidgetId, displayText);
+        prefs.putInt(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId, recipeId);
         prefs.apply();
     }
 
     // Read the prefix from the SharedPreferences object for this widget.
     // If there is no preference saved, get the default from a resource
-    static String loadTitlePref(Context context, int appWidgetId) {
+    static String getContentPref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
-        if (titleValue != null) {
-            return titleValue;
+        String displayText = prefs.getString(PREF_CONTENT_PREFIX_KEY + appWidgetId, null);
+        if (displayText != null) {
+            return displayText;
         } else {
+            Log.e(TAG, "Ingredients text not found in SharedPreferences");
             return context.getString(R.string.appwidget_text);
         }
     }
 
+    static int getRecipeIdPref(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        int recipeId = prefs.getInt(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId, RecipeAppConstants.ERROR_RECIPE_ID);
+        return recipeId;
+    }
+
     static void deleteTitlePref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.remove(PREF_PREFIX_KEY + appWidgetId);
+        prefs.remove(PREF_CONTENT_PREFIX_KEY + appWidgetId);
+        prefs.remove(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId);
         prefs.apply();
     }
 

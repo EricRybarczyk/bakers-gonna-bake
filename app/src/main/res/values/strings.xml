@@ -11,6 +11,7 @@
 
     <!-- widget -->
     <string name="appwidget_text">Ingredients</string>
+    <string name="appwidget_text_header">Ingredients for</string>
     <string name="appwidget_configure_text">Select a Recipe</string>
     <string name="appwidget_configure_description">Ingredients for the recipe you select will be displayed on your home screen widget.</string>
     <string name="appwidget_add_button_text">Add Widget</string>
