@@ -8,4 +8,10 @@
     <string name="aria_media_button_play_text">Play</string>
     <string name="aria_media_button_pause_text">Pause</string>
     <string name="aria_media_button_fastforward_text">Fast Forward</string>
+
+    <!-- widget -->
+    <string name="appwidget_text">Ingredients</string>
+    <string name="appwidget_configure_text">Select a Recipe</string>
+    <string name="appwidget_configure_description">Ingredients for the recipe you select will be displayed on your home screen widget.</string>
+    <string name="appwidget_add_button_text">Add Widget</string>
 </resources>

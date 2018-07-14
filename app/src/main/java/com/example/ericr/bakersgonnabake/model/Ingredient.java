@@ -27,4 +27,5 @@ public class Ingredient {
     public String getIngredientName() {
         return ingredientName;
     }
+
 }
