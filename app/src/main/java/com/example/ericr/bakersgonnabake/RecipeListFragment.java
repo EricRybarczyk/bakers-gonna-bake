@@ -1,9 +1,10 @@
 package com.example.ericr.bakersgonnabake;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,7 @@ public class RecipeListFragment extends Fragment
         implements RecipeDataStore.RecipeListLoaderCallbacks, RecipeAdapter.RecipeAdapterOnClickHandler {
 
     @BindView(R.id.rv_recipes) protected RecyclerView recipeRecyclerView;
+    private boolean isTabletLayout;
     private static final String TAG = RecipeListFragment.class.getSimpleName();
 
     public RecipeListFragment() {
@@ -37,8 +39,17 @@ public class RecipeListFragment extends Fragment
 
         ButterKnife.bind(this, rootView);
 
+        if (getString(R.string.screen_type).equals(RecipeAppConstants.SCREEN_TABLET)) {
+            isTabletLayout = true;
+        }
+
         // wire up things to RecyclerView
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL ,false);
+        RecyclerView.LayoutManager layoutManager;
+        if (isTabletLayout) {
+            layoutManager = new GridLayoutManager(getActivity(), 2);
+        } else {
+            layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL ,false);
+        }
         recipeRecyclerView.setLayoutManager(layoutManager);
         recipeRecyclerView.setHasFixedSize(true);
 
@@ -58,10 +69,8 @@ public class RecipeListFragment extends Fragment
         Log.e(TAG, errorMessage);
     }
 
-    // TODO - review this click handler location, perhaps move up to Activity.
-    // Note to self: I think this is typically handled in the Activity, not the Fragment
-    // but in this case I think it will work ok since all devices will have this fragment alone
-    // in the MainActivity. However, I might move it to have better/typical code organization.
+    // Note to self: I think this is typically handled in the Activity, not the Fragment, but
+    // in this case it will work since all devices will have this fragment alone in MainActivity.
     @Override
     public void onClick(int recipeId) {
         Class destination = RecipeStepsActivity.class;

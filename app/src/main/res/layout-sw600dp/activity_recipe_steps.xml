@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100">
+
+    <fragment
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recipe_list_fragment"
+        android:layout_width="0dp"
+        android:layout_weight="35"
+        android:layout_height="match_parent"
+        android:name="com.example.ericr.bakersgonnabake.RecipeStepListFragment"/>
+
+    <FrameLayout
+        android:id="@+id/recipe_step_detail_container"
+        android:layout_width="0dp"
+        android:layout_weight="65"
+        android:layout_height="wrap_content">
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -33,6 +33,7 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
     private static final String PREFS_NAME = "com.example.ericr.bakersgonnabake.widget.IngredientListWidget";
     private static final String PREF_CONTENT_PREFIX_KEY = "appwidget_content_";
     private static final String PREF_RECIPE_ID_PREFIX_KEY = "appwidget_recipe_id_";
+    private static final String PREF_IS_TABLET_KEY = "appwidget_is_tablet";
     private static final String TAG = IngredientListWidgetConfigureActivity.class.getSimpleName();
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private List<Recipe> recipeList;
@@ -42,6 +43,10 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             final Context context = IngredientListWidgetConfigureActivity.this;
+            boolean isTabletLayout = false;
+            if (getString(R.string.screen_type).equals(RecipeAppConstants.SCREEN_TABLET)) {
+                isTabletLayout = true;
+            }
 
             TextView clickedView = (TextView) view;
             String selectedText = clickedView.getText().toString();
@@ -65,7 +70,7 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
                 }
             }
 
-            savePrefs(context, mAppWidgetId, widgetText.toString(), recipeId);
+            savePrefs(context, mAppWidgetId, widgetText.toString(), recipeId, isTabletLayout);
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -84,10 +89,11 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
     }
 
     // Write the prefix to the SharedPreferences object for this widget
-    static void savePrefs(Context context, int appWidgetId, String displayText, int recipeId) {
+    static void savePrefs(Context context, int appWidgetId, String displayText, int recipeId, boolean isTablet) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.putString(PREF_CONTENT_PREFIX_KEY + appWidgetId, displayText);
         prefs.putInt(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId, recipeId);
+        prefs.putBoolean(PREF_IS_TABLET_KEY + appWidgetId, isTablet);
         prefs.apply();
     }
 
@@ -108,6 +114,12 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         int recipeId = prefs.getInt(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId, RecipeAppConstants.ERROR_RECIPE_ID);
         return recipeId;
+    }
+
+    static boolean getIsTabletPref(Context context, int mAppWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        boolean isTablet = prefs.getBoolean(PREF_IS_TABLET_KEY + mAppWidgetId, false);
+        return isTablet;
     }
 
     static void deleteTitlePref(Context context, int appWidgetId) {

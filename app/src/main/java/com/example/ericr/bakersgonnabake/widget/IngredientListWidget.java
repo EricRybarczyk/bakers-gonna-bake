@@ -5,10 +5,12 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.widget.RemoteViews;
 
 import com.example.ericr.bakersgonnabake.R;
 import com.example.ericr.bakersgonnabake.RecipeStepDetail;
+import com.example.ericr.bakersgonnabake.RecipeStepsActivity;
 import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
 
 
@@ -18,18 +20,27 @@ import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
  */
 public class IngredientListWidget extends AppWidgetProvider {
 
+
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         CharSequence widgetText = IngredientListWidgetConfigureActivity.getContentPref(context, appWidgetId);
         int activeRecipeId = IngredientListWidgetConfigureActivity.getRecipeIdPref(context, appWidgetId);
+        boolean isTablet = IngredientListWidgetConfigureActivity.getIsTabletPref(context, appWidgetId);
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredient_list_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);
 
+        Class destination;
+        if (isTablet) {
+            destination = RecipeStepsActivity.class;
+        } else {
+            destination = RecipeStepDetail.class;
+        }
+
         if (activeRecipeId != RecipeAppConstants.ERROR_RECIPE_ID) {
             // set up the PendingIntent for a click
-            Intent intentToStart= new Intent(context, RecipeStepDetail.class);
+            Intent intentToStart= new Intent(context, destination);
             intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, activeRecipeId);
             intentToStart.putExtra(RecipeAppConstants.KEY_STEP_ID, RecipeAppConstants.INGREDIENT_STEP_INDICATOR);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intentToStart, PendingIntent.FLAG_UPDATE_CURRENT);

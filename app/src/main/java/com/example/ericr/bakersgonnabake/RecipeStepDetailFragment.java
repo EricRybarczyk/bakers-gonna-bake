@@ -1,6 +1,6 @@
 package com.example.ericr.bakersgonnabake;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -47,7 +47,9 @@ import butterknife.ButterKnife;
 public class RecipeStepDetailFragment extends Fragment implements RecipeDataStore.RecipeListLoaderCallbacks, View.OnClickListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
+    private boolean isTabletLayout;
     private int activeRecipeId;
+    private Recipe activeRecipe;
     private int activeStepId;
     private SimpleExoPlayer exoPlayer;
     @BindView(R.id.exo_player) protected SimpleExoPlayerView playerView;
@@ -57,10 +59,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.step_description_container) protected ScrollView descriptionScrollView;
     @BindView(R.id.button_nav_back) protected Button navBackButton;
     @BindView(R.id.button_nav_forward) protected Button navForwardButton;
-    private Recipe activeRecipe;
 
     public RecipeStepDetailFragment() {
-        //activeStepId = RecipeAppConstants.ERROR_STEP_ID;
     }
 
     @Nullable
@@ -70,18 +70,27 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
         ButterKnife.bind(this, rootView);
         navBackButton.setOnClickListener(this);
         navForwardButton.setOnClickListener(this);
+
+        if (getString(R.string.screen_type).equals(RecipeAppConstants.SCREEN_TABLET)) {
+            isTabletLayout = true;
+        }
+
         return rootView;
     }
-
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        RecipeStepDetail parentActivity = (RecipeStepDetail) getActivity();
-        activeRecipeId = parentActivity.getRecipeId();
-        activeStepId = parentActivity.getStepId();
+        if (isTabletLayout) {
+            activeRecipeId = getArguments().getInt(RecipeAppConstants.KEY_RECIPE_ID, RecipeAppConstants.ERROR_RECIPE_ID);
+            activeStepId = getArguments().getInt(RecipeAppConstants.KEY_STEP_ID, RecipeAppConstants.ERROR_STEP_ID);
+        } else {
+            RecipeStepDetail parentActivity = (RecipeStepDetail) getActivity();
+            activeRecipeId = parentActivity.getRecipeId();
+            activeStepId = parentActivity.getStepId();
+
+        }
     }
 
     @Override
@@ -113,12 +122,10 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             if (activeStepId == RecipeAppConstants.INGREDIENT_STEP_INDICATOR) {
                 // hide player because ingredient step has no video
                 playerView.setVisibility(View.GONE);
-                // hide Previous button because this is the first step in the list so there is no previous
-//                navBackButton.setVisibility(View.GONE);
                 ingredientsLabel.setVisibility(View.VISIBLE);
                 ingredientsLabel.setText(getActivity().getResources().getString(R.string.recipe_step_ingredients_text));
 
-                // adjust constraints because player view is now gone and descriptionScrollView constrains to it in XML
+                // adjust constraints because player view is now gone and other views constrain to it in XML
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
                 constraintSet.connect(
@@ -127,6 +134,12 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                         ingredientsLabel.getId(),
                         ConstraintSet.BOTTOM
                         );
+                constraintSet.connect(
+                        ingredientsLabel.getId(),
+                        ConstraintSet.TOP,
+                        constraintLayout.getId(),
+                        ConstraintSet.TOP
+                );
                 constraintSet.applyTo(constraintLayout);
 
                 // build HTML list for better display
@@ -143,6 +156,16 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             } else {
                 ingredientsLabel.setVisibility(View.GONE);
                 playerView.setVisibility(View.VISIBLE);
+
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(
+                        ingredientsLabel.getId(),
+                        ConstraintSet.TOP,
+                        playerView.getId(),
+                        ConstraintSet.BOTTOM
+                );
+                constraintSet.applyTo(constraintLayout);
 
                 // get step media info
                 Step activeStep = activeRecipe.getStep(activeStepId);
@@ -168,10 +191,16 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 stepDescription.setText(Html.fromHtml(sb.toString()));
             }
 
-            // hide forward button when this is the last step
-            if (activeStepId == activeRecipe.getSteps().get(activeRecipe.getSteps().size() - 1).getId()) {
+            if (isTabletLayout) { // tablet does not need the nav buttons due to two-pane layout
                 navForwardButton.setVisibility(View.GONE);
+                navBackButton.setVisibility(View.GONE);
+            } else {
+                // hide forward button when this is the last step
+                if (activeStepId == activeRecipe.getSteps().get(activeRecipe.getSteps().size() - 1).getId()) {
+                    navForwardButton.setVisibility(View.GONE);
+                }
             }
+
         }
     }
 

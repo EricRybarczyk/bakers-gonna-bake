@@ -1,7 +1,6 @@
 package com.example.ericr.bakersgonnabake;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,17 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.anupcowkur.reservoir.Reservoir;
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Recipe;
-import com.example.ericr.bakersgonnabake.service.RecipeService;
 import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import butterknife.BindView;
