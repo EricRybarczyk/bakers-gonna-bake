@@ -11,11 +11,13 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -56,7 +58,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.step_description) protected TextView stepDescription;
     @BindView(R.id.ingredients_label) protected TextView ingredientsLabel;
     @BindView(R.id.parent_constraint_layout) protected ConstraintLayout constraintLayout;
-    @BindView(R.id.step_description_container) protected ScrollView descriptionScrollView;
+    @BindView(R.id.button_holder_frame) protected ConstraintLayout buttonHolderLayout;
     @BindView(R.id.button_nav_back) protected Button navBackButton;
     @BindView(R.id.button_nav_forward) protected Button navForwardButton;
 
@@ -70,6 +72,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
         ButterKnife.bind(this, rootView);
         navBackButton.setOnClickListener(this);
         navForwardButton.setOnClickListener(this);
+        stepDescription.setMovementMethod(new ScrollingMovementMethod());
 
         if (getString(R.string.screen_type).equals(RecipeAppConstants.SCREEN_TABLET)) {
             isTabletLayout = true;
@@ -129,7 +132,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
                 constraintSet.connect(
-                        descriptionScrollView.getId(),
+                        stepDescription.getId(),
                         ConstraintSet.TOP,
                         ingredientsLabel.getId(),
                         ConstraintSet.BOTTOM
@@ -194,6 +197,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             if (isTabletLayout) { // tablet does not need the nav buttons due to two-pane layout
                 navForwardButton.setVisibility(View.GONE);
                 navBackButton.setVisibility(View.GONE);
+                buttonHolderLayout.setVisibility(View.INVISIBLE);
+
             } else {
                 // hide forward button when this is the last step
                 if (activeStepId == activeRecipe.getSteps().get(activeRecipe.getSteps().size() - 1).getId()) {

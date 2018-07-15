@@ -31,38 +31,29 @@
         android:background="@color/colorPrimaryDark"/>
     <!-- app:layout_constraintTop_toBottomOf="@id/exo_player" -->
 
-    <ScrollView
-        android:id="@+id/step_description_container"
+    <TextView
+        android:id="@+id/step_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/exo_player"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/button_holder_frame"
+        android:scrollbars="vertical"
         android:background="@drawable/shape_view_border"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="12dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp">
+        android:layout_margin="4dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"
+        android:textSize="22sp"
+        android:textColor="@color/colorDefaultText"
+        tools:text="Step Description"/>
+    <!--
+    height 0dp works for phone (portrait and landscape) but then it disappears on tablet.
+    height wrap_content works for tablet, but doesn't fill the vertical space on either and overflows content area when phone is landscape
+    -->
         <!-- app:layout_constraintBottom_toTopOf="@id/button_holder_frame" -->
-
-        <TextView
-            android:id="@+id/step_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="4dp"
-            android:textSize="22sp"
-            android:textColor="@color/colorDefaultText"
-            tools:text="Step Description"/>
-
-    </ScrollView>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/button_holder_frame"
