@@ -1,5 +1,6 @@
 package com.example.ericr.bakersgonnabake;
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.ViewInteraction;
@@ -7,6 +8,7 @@ import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +27,7 @@ public class RecipeListFragmentTest {
     @Rule public ActivityTestRule<MainActivity> mainActivityTestRule = new ActivityTestRule<>(MainActivity.class, true);
 
     private static final int RECYCLERVIEW_TEST_ITEM_POSITION = 2;
+    private IdlingResource idlingResource;
 
     @Before
     public void init(){
@@ -38,8 +41,15 @@ public class RecipeListFragmentTest {
         // is directly taken from AOSP and Udacity materials
         // *******************************************************************
         RecipeListFragment recipeListFragment = (RecipeListFragment) mainActivityTestRule.getActivity().getSupportFragmentManager().findFragmentById(R.id.recipe_list_fragment);
-        IdlingResource idlingResource = recipeListFragment.getIdlingResource();
+        idlingResource = recipeListFragment.getIdlingResource();
         IdlingRegistry.getInstance().register(idlingResource);
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        if (idlingResource != null) {
+            IdlingRegistry.getInstance().unregister(idlingResource);
+        }
     }
 
     @Test
