@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Recipe;
 import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
@@ -28,6 +30,21 @@ public class RecipeStepListFragment extends Fragment
     OnRecipeStepClickListener recipeStepClickListener;
     @BindView(R.id.recipe_steps_list) protected RecyclerView recipeStepsListRecyclerView;
     private int activeRecipeId;
+
+    // *******************************************************************
+    // Non-plagiarism statement: the technique for SimpleIdlingResource
+    // is directly taken from AOSP and Udacity materials
+    // *******************************************************************
+    @Nullable private SimpleIdlingResource idlingResource;
+
+    @VisibleForTesting
+    @NonNull
+    public SimpleIdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
+        return idlingResource;
+    }
 
     // interface for callback to host activity when item is clicked
     public interface OnRecipeStepClickListener {
@@ -78,7 +95,7 @@ public class RecipeStepListFragment extends Fragment
             activeRecipeId = parentActivity.getRecipeId();
         }
 
-        (new RecipeDataStore(getActivity())).loadRecipeList(this);
+        (new RecipeDataStore(getActivity())).loadRecipeList(this, idlingResource);
 
     }
 

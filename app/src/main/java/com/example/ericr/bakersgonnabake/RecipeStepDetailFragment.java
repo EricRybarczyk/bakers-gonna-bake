@@ -1,5 +1,7 @@
 package com.example.ericr.bakersgonnabake;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Ingredient;
 import com.example.ericr.bakersgonnabake.model.Recipe;
@@ -62,6 +65,21 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.button_nav_back) protected Button navBackButton;
     @BindView(R.id.button_nav_forward) protected Button navForwardButton;
 
+    // *******************************************************************
+    // Non-plagiarism statement: the technique for SimpleIdlingResource
+    // is directly taken from AOSP and Udacity materials
+    // *******************************************************************
+    @Nullable private SimpleIdlingResource idlingResource;
+
+    @VisibleForTesting
+    @NonNull
+    public SimpleIdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
+        return idlingResource;
+    }
+
     public RecipeStepDetailFragment() {
     }
 
@@ -99,7 +117,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @Override
     public void onStart() {
         super.onStart();
-        new RecipeDataStore(getActivity()).loadRecipeList(this);
+        new RecipeDataStore(getActivity()).loadRecipeList(this, idlingResource);
     }
 
     @Override

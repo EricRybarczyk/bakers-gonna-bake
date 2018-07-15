@@ -1,5 +1,7 @@
 package com.example.ericr.bakersgonnabake;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Recipe;
 import com.example.ericr.bakersgonnabake.util.RecipeAppConstants;
@@ -27,6 +30,21 @@ public class RecipeListFragment extends Fragment
     @BindView(R.id.rv_recipes) protected RecyclerView recipeRecyclerView;
     private boolean isTabletLayout;
     private static final String TAG = RecipeListFragment.class.getSimpleName();
+
+    // *******************************************************************
+    // Non-plagiarism statement: the technique for SimpleIdlingResource
+    // is directly taken from AOSP and Udacity materials
+    // *******************************************************************
+    @Nullable private SimpleIdlingResource idlingResource;
+
+    @VisibleForTesting
+    @NonNull
+    public SimpleIdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
+        return idlingResource;
+    }
 
     public RecipeListFragment() {
     }
@@ -53,7 +71,7 @@ public class RecipeListFragment extends Fragment
         recipeRecyclerView.setLayoutManager(layoutManager);
         recipeRecyclerView.setHasFixedSize(true);
 
-        (new RecipeDataStore(getActivity())).loadRecipeList(this);
+        (new RecipeDataStore(getActivity())).loadRecipeList(this, idlingResource);
 
         return rootView;
     }
@@ -78,5 +96,6 @@ public class RecipeListFragment extends Fragment
         intentToStart.putExtra(RecipeAppConstants.KEY_RECIPE_ID, recipeId);
         startActivity(intentToStart);
     }
+
 
 }

@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
 import com.example.ericr.bakersgonnabake.R;
 import com.example.ericr.bakersgonnabake.data.RecipeDataStore;
 import com.example.ericr.bakersgonnabake.model.Ingredient;
@@ -38,6 +42,22 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private List<Recipe> recipeList;
     @BindView(R.id.appwidget_recipe_list) protected ListView recipeListView;
+
+    // *******************************************************************
+    // Non-plagiarism statement: the technique for SimpleIdlingResource
+    // is directly taken from AOSP and Udacity materials
+    // *******************************************************************
+    @Nullable
+    private SimpleIdlingResource idlingResource;
+
+    @VisibleForTesting
+    @NonNull
+    public SimpleIdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
+        return idlingResource;
+    }
 
     ListView.OnItemClickListener mOnClickListener = new ListView.OnItemClickListener() {
         @Override
@@ -154,7 +174,7 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
             return;
         }
 
-        (new RecipeDataStore(this)).loadRecipeList(this);
+        (new RecipeDataStore(this)).loadRecipeList(this, idlingResource);
 
     }
 

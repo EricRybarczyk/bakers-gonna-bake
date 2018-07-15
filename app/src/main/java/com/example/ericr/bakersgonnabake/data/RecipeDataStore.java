@@ -1,10 +1,12 @@
 package com.example.ericr.bakersgonnabake.data;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.anupcowkur.reservoir.Reservoir;
 import com.anupcowkur.reservoir.ReservoirPutCallback;
+import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
 import com.example.ericr.bakersgonnabake.model.Recipe;
 import com.example.ericr.bakersgonnabake.service.RecipeService;
 import com.example.ericr.bakersgonnabake.service.UdacityBakingEndpoint;
@@ -67,7 +69,24 @@ public class RecipeDataStore {
         }
     }
 
-    public void loadRecipeList(final RecipeListLoaderCallbacks callbacks) {
+    public void loadRecipeList(final RecipeListLoaderCallbacks callbacks, @Nullable final SimpleIdlingResource idlingResource) {
+
+        // *******************************************************************
+        // Non-plagiarism statement: the technique for SimpleIdlingResource
+        // is directly taken from AOSP and Udacity materials
+        // *******************************************************************
+        /**
+         * The IdlingResource is null in production as set by the @Nullable annotation which means
+         * the value is allowed to be null.
+         *
+         * If the idle state is true, Espresso can perform the next action.
+         * If the idle state is false, Espresso will wait until it is true before
+         * performing the next action.
+         */
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
         List<Recipe> result;
         // check the cache first
         try {
@@ -92,11 +111,17 @@ public class RecipeDataStore {
                 cacheRecipeData(resultRecipes);
                 Log.i(TAG, "Network data load complete");
                 callbacks.onLoadFinished(resultRecipes);
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
                 callbacks.onLoadError(t.getMessage());
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
             }
         });
     }

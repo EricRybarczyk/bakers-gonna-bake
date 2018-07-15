@@ -11,7 +11,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-        //implements RecipeAdapter.RecipeAdapterOnClickHandler
 
     private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.rv_recipes) protected RecyclerView recipeRecyclerView;
