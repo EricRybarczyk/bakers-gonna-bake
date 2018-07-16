@@ -6,10 +6,10 @@ public class Recipe {
 
     private int id;
     private String name;
-    private List<Ingredient> ingredients; // TODO: verify sort order is maintained, evaluate options
+    private List<Ingredient> ingredients;
     private List<Step> steps;
     private int servings;
-    private String image; // TODO: json data has empty value for all of these, look at free images to include instead
+    private String image;
 
     public Recipe(int id, String name, List<Ingredient> ingredients, List<Step> steps, int servings, String image) {
         this.id = id;

@@ -43,7 +43,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
     public void onBindViewHolder(@NonNull RecipeHolder holder, int position) {
         Recipe recipe = recipeList.get(position);
         holder.recipeNameText.setText(recipe.getName());
-        // TODO - come up with a better approach than this switch - this is just for UI prototyping
+        // Real app would require a better approach than this switch
         switch (position) {
             case 0:
                 holder.recipeImage.setImageResource(R.drawable.recipe1_1024x576);
