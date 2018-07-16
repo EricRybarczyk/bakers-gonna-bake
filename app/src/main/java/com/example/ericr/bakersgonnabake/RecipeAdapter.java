@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ericr.bakersgonnabake.model.Recipe;
 
@@ -82,7 +81,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
 
         @Override
         @OnClick
-        public void onClick(View v) {;
+        public void onClick(View v) {
             int recipeId = recipeList.get(getAdapterPosition()).getId();
             recipeItemClickHandler.onClick(recipeId);
         }

@@ -1,17 +1,17 @@
 package com.example.ericr.bakersgonnabake;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -19,8 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
@@ -44,6 +42,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,6 +80,9 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     }
 
     public RecipeStepDetailFragment() {
+        // set initial defaults to avoid null values
+        activeRecipeId = RecipeAppConstants.ERROR_RECIPE_ID;
+        activeStepId = RecipeAppConstants.ERROR_STEP_ID;
     }
 
     @Nullable
@@ -104,13 +106,16 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
         super.onActivityCreated(savedInstanceState);
 
         if (isTabletLayout) {
-            activeRecipeId = getArguments().getInt(RecipeAppConstants.KEY_RECIPE_ID, RecipeAppConstants.ERROR_RECIPE_ID);
-            activeStepId = getArguments().getInt(RecipeAppConstants.KEY_STEP_ID, RecipeAppConstants.ERROR_STEP_ID);
+            if (getArguments() != null) {
+                activeRecipeId = getArguments().getInt(RecipeAppConstants.KEY_RECIPE_ID, RecipeAppConstants.ERROR_RECIPE_ID);
+                activeStepId = getArguments().getInt(RecipeAppConstants.KEY_STEP_ID, RecipeAppConstants.ERROR_STEP_ID);
+            }
         } else {
             RecipeStepDetail parentActivity = (RecipeStepDetail) getActivity();
-            activeRecipeId = parentActivity.getRecipeId();
-            activeStepId = parentActivity.getStepId();
-
+            if (parentActivity != null) {
+                activeRecipeId = parentActivity.getRecipeId();
+                activeStepId = parentActivity.getStepId();
+            }
         }
     }
 
@@ -144,7 +149,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 // hide player because ingredient step has no video
                 playerView.setVisibility(View.GONE);
                 ingredientsLabel.setVisibility(View.VISIBLE);
-                ingredientsLabel.setText(getActivity().getResources().getString(R.string.recipe_step_ingredients_text));
+                ingredientsLabel.setText(Objects.requireNonNull(getActivity()).getResources().getString(R.string.recipe_step_ingredients_text));
 
                 // adjust constraints because player view is now gone and other views constrain to it in XML
                 ConstraintSet constraintSet = new ConstraintSet();
@@ -202,7 +207,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 sb.append(activeStep.getDescription());
                 sb.append("</p>");
 
-                playerView.setDefaultArtwork(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.baking_clipart));
+                playerView.setDefaultArtwork(BitmapFactory.decodeResource(Objects.requireNonNull(getActivity()).getResources(), R.drawable.baking_clipart));
                 initializePlayer(Uri.parse(activeStep.getVideoURL()));
             }
 
@@ -246,7 +251,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             if (videoUri.toString().isEmpty()) {
                 playerView.setUseController(false);
             } else {
-                String userAgent = Util.getUserAgent(context, context.getResources().getString(R.string.app_name));
+                String userAgent = Util.getUserAgent(context, Objects.requireNonNull(context).getResources().getString(R.string.app_name));
                 MediaSource mediaSource = new ExtractorMediaSource(
                         videoUri,
                         new DefaultDataSourceFactory(context, userAgent),

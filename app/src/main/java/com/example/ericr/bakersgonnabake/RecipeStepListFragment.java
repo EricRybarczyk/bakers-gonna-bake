@@ -114,12 +114,6 @@ public class RecipeStepListFragment extends Fragment
     @Override
     public void onLoadError(String errorMessage) {
         Log.e(TAG, errorMessage);
-        // TODO - implement some error condition & display
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // TODO - implement saved instance state
-    }
 }

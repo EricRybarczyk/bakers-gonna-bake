@@ -132,14 +132,12 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
 
     static int getRecipeIdPref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        int recipeId = prefs.getInt(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId, RecipeAppConstants.ERROR_RECIPE_ID);
-        return recipeId;
+        return prefs.getInt(PREF_RECIPE_ID_PREFIX_KEY + appWidgetId, RecipeAppConstants.ERROR_RECIPE_ID);
     }
 
     static boolean getIsTabletPref(Context context, int mAppWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        boolean isTablet = prefs.getBoolean(PREF_IS_TABLET_KEY + mAppWidgetId, false);
-        return isTablet;
+        return prefs.getBoolean(PREF_IS_TABLET_KEY + mAppWidgetId, false);
     }
 
     static void deleteTitlePref(Context context, int appWidgetId) {
@@ -185,7 +183,7 @@ public class IngredientListWidgetConfigureActivity extends Activity implements R
         for (Recipe r: recipeList) {
             recipeNames.add(r.getName());
         }
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, R.layout.widget_config_list_item, recipeNames);
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.widget_config_list_item, recipeNames);
         recipeListView.setAdapter(itemsAdapter);
         recipeListView.setOnItemClickListener(mOnClickListener);
     }
