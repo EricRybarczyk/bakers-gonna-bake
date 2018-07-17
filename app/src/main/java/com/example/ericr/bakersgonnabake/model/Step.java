@@ -11,8 +11,8 @@ public class Step {
         this.id = id;
         this.shortDescription = shortDescription.trim();
         this.description = description.trim();
-        this.videoURL = videoURL;
-        this.thumbnailURL = thumbnailURL;
+        this.videoURL = videoURL.trim();
+        this.thumbnailURL = thumbnailURL.trim();
     }
 
     public int getId() {

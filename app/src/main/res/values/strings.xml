@@ -4,10 +4,12 @@
     <string name="recipe_step_ingredients_text">Ingredient List</string>
     <string name="step_detail_previous_button_label">Previous</string>
     <string name="step_detail_next_button_label">Next</string>
+
     <string name="aria_media_button_rewind_text">Rewind</string>
     <string name="aria_media_button_play_text">Play</string>
     <string name="aria_media_button_pause_text">Pause</string>
     <string name="aria_media_button_fastforward_text">Fast Forward</string>
+    <string name="aria_thumbnail_image_for_step">Thumbnail Image for Step</string>
 
     <!-- widget -->
     <string name="appwidget_text">Ingredients</string>
@@ -15,4 +17,5 @@
     <string name="appwidget_configure_text">Select a Recipe</string>
     <string name="appwidget_configure_description">Ingredients for the recipe you select will be displayed on your home screen widget.</string>
     <string name="appwidget_add_button_text">Add Widget</string>
+
 </resources>

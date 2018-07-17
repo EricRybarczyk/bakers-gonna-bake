@@ -2,6 +2,7 @@ package com.example.ericr.bakersgonnabake;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ericr.bakersgonnabake.IdlingResource.SimpleIdlingResource;
@@ -39,6 +42,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -56,6 +60,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     private Recipe activeRecipe;
     private int activeStepId;
     private SimpleExoPlayer exoPlayer;
+    private long playerPosition;
     @BindView(R.id.exo_player) protected SimpleExoPlayerView playerView;
     @BindView(R.id.step_description) protected TextView stepDescription;
     @BindView(R.id.ingredients_label) protected TextView ingredientsLabel;
@@ -63,6 +68,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     @BindView(R.id.button_holder_frame) protected ConstraintLayout buttonHolderLayout;
     @BindView(R.id.button_nav_back) protected Button navBackButton;
     @BindView(R.id.button_nav_forward) protected Button navForwardButton;
+    @BindView(R.id.thumbnail_frame) protected FrameLayout thumbnailFrame;
+    @BindView(R.id.step_thumbnail) protected ImageView thumbnailImage;
 
     // *******************************************************************
     // Non-plagiarism statement: the technique for SimpleIdlingResource
@@ -132,6 +139,31 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (exoPlayer != null) {
+            playerPosition = exoPlayer.getCurrentPosition();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        playerPosition = exoPlayer.getCurrentPosition();
+        outState.putLong(RecipeAppConstants.KEY_MEDIA_PLAYER_POSITION, playerPosition);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            // safe because getLong() returns 0L if no value found for key
+            playerPosition = savedInstanceState.getLong(RecipeAppConstants.KEY_MEDIA_PLAYER_POSITION);
+        }
+    }
+
+    @Override
     public void onLoadFinished(List<Recipe> recipeList) {
         activeRecipe = null;
         for (Recipe recipe : recipeList) {
@@ -196,6 +228,18 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                 // get step media info
                 Step activeStep = activeRecipe.getStep(activeStepId);
 
+                // see if there is a thumbnail image URL - existing data does not contain any value for this field on any Recipe Step
+                if (activeStep.getThumbnailURL().isEmpty()) {
+                    thumbnailFrame.setVisibility(View.GONE);
+                } else {
+                    // get the thumbnail image and display
+                    Picasso.with(getActivity())
+                            .load(activeStep.getThumbnailURL())
+                            .placeholder(R.drawable.baking_clipart)
+                            .error(R.drawable.baking_clipart)
+                            .into(thumbnailImage);
+                }
+
                 // html paragraphs for better display
                 if (!activeStep.getShortDescription().isEmpty()
                         && !activeStep.getShortDescription().equalsIgnoreCase(activeStep.getDescription())) {
@@ -209,6 +253,15 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
 
                 playerView.setDefaultArtwork(BitmapFactory.decodeResource(Objects.requireNonNull(getActivity()).getResources(), R.drawable.baking_clipart));
                 initializePlayer(Uri.parse(activeStep.getVideoURL()));
+
+                int orientation = getResources().getConfiguration().orientation;
+                if (!isTabletLayout && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
+                    // phone in landscape - show only the media player
+                    stepDescription.setVisibility(View.GONE);
+                    buttonHolderLayout.setVisibility(View.GONE);
+                    thumbnailFrame.setVisibility(View.GONE);
+                }
+
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -260,6 +313,7 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
                         null
                 );
                 exoPlayer.prepare(mediaSource);
+                exoPlayer.seekTo(playerPosition);
             }
             exoPlayer.setPlayWhenReady(true);
         }
@@ -272,6 +326,8 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
             exoPlayer = null;
         }
     }
+
+
 
     @Override
     public void onClick(View v) {

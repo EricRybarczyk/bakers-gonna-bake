@@ -53,7 +53,27 @@
     height 0dp works for phone (portrait and landscape) but then it disappears on tablet.
     height wrap_content works for tablet, but doesn't fill the vertical space on either and overflows content area when phone is landscape
     -->
-        <!-- app:layout_constraintBottom_toTopOf="@id/button_holder_frame" -->
+
+    <FrameLayout
+        android:id="@+id/thumbnail_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/step_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/step_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:contentDescription="@string/aria_thumbnail_image_for_step"/>
+
+    </FrameLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/button_holder_frame"

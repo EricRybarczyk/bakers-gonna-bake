@@ -8,4 +8,5 @@ public class RecipeAppConstants {
     public static final int INGREDIENT_STEP_INDICATOR = -8675309;
     public static final String SCREEN_PHONE = "phone"; // must match value in values/screen.xml
     public static final String SCREEN_TABLET = "tablet"; // must match value in values-sw600dp/screen.xml
+    public static final String KEY_MEDIA_PLAYER_POSITION = "media_player_position";
 }

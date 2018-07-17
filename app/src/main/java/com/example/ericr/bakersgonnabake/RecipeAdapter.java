@@ -57,6 +57,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
             case 3:
                 holder.recipeImage.setImageResource(R.drawable.recipe4_1024x576);
                 break;
+            default:
+                holder.recipeImage.setImageResource(R.drawable.baking_clipart);
+                break;
         }
     }
 
