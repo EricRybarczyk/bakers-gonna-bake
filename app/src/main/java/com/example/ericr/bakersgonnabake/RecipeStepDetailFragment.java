@@ -148,9 +148,10 @@ public class RecipeStepDetailFragment extends Fragment implements RecipeDataStor
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        playerPosition = exoPlayer.getCurrentPosition();
-        outState.putLong(RecipeAppConstants.KEY_MEDIA_PLAYER_POSITION, playerPosition);
-
+        if (exoPlayer != null) {
+            playerPosition = exoPlayer.getCurrentPosition();
+            outState.putLong(RecipeAppConstants.KEY_MEDIA_PLAYER_POSITION, playerPosition);
+        }
         super.onSaveInstanceState(outState);
     }
 
